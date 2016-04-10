@@ -1,0 +1,9 @@
+<resources>
+
+    <string name="base_url">http://express-it.optusnet.com.au/sample.json</string>
+    <string name="general_error">Unknown error, data returned null</string>
+    <string name="intro_message_search">Select your destination</string>
+    <string name="navigate_button">NAVIGATE</string>
+    <string name="debug_app_name">Test2 UAT</string>
+    <string name="release_app_name">Test2 Release</string>
+</resources>

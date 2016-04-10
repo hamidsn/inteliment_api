@@ -1,0 +1,100 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+    def buildVersionName = "1.1.0"
+    def buildType = ""
+
+    defaultConfig {
+        applicationId "com.example.h_sed.test2"
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
+
+    signingConfigs {
+        debug {
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storeFile file('C:/Users/h_sed/.android/debug.keystore')
+            storePassword 'android'
+        }
+        release {
+//            TODO (point to the release key)the key should not hardcode a clients key directly
+            storeFile file('C:/Users/h_sed/.android/debug.keystore')
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storePassword 'android'
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled  false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        uat {
+            signingConfig signingConfigs.debug
+            applicationIdSuffix = ".uat"
+            debuggable true
+            minifyEnabled  false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            debuggable true
+        }
+        debug {
+            signingConfig signingConfigs.debug
+            applicationIdSuffix = ".debug"
+            minifyEnabled  false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+
+    android.applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def apk = output.outputFile
+            def newName = apk.name.replace(".apk", "-v" + variant.versionName + "-" + variant.buildType.name.toUpperCase() + ".apk")
+            newName = newName
+                    .replace("-" + variant.buildType.name, "")
+                    .replace(project.name + "-", "");
+
+            //Include Jenkins build number if it exists
+            if (System.getenv().BUILD_NUMBER != null) {
+                newName = newName.replace(".apk", "-" + System.getenv().BUILD_NUMBER + ".apk")
+            }
+
+            output.outputFile = new File(apk.parent, newName)
+            if (output.zipAlign) {
+                output.outputFile = new File(apk.parent, newName.replace("-unaligned", ""));
+            }
+        }
+    }
+    productFlavors {
+        //TODO set versioncode
+        IntelimentTest2{
+            applicationId "au.com.inteilment.test.android"
+            def clientIteration = ".5"
+            versionName buildVersionName + clientIteration
+            versionCode 1
+        }
+
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.2.1'
+    compile 'com.google.code.gson:gson:2.2.2'
+    compile 'com.mcxiaoke.volley:library-aar:1.0.1'
+}
